@@ -1,0 +1,80 @@
+
+local RS = game:GetService("ReplicatedStorage")
+
+local roundEv = RS:WaitForChild("roundEvent")
+
+local gameSpawn = game.Workspace.SpawnLocation.GameSpawn
+local lobbySpawn = game.Workspace.SpawnLocation
+
+local msg = RS:WaitForChild("message")
+
+local intermission = RS:WaitForChild("intermission")
+local bool = RS:WaitForChild("myBool")
+local roundEvent = RS:WaitForChild("roundEvent")
+local diceRegen = RS:WaitForChild("diceRegen")
+local diceEvent = RS:WaitForChild("roundStatus")
+
+
+bool.Changed:Connect(function()
+	if bool.Value == true  then
+		for _, x in pairs(game.Players:GetChildren())do
+			local char = x.Character
+			char.HumanoidRootPart.CFrame = gameSpawn.CFrame
+		end
+		
+	else
+		for _, x in pairs(game.Players:GetChildren())do
+			local char = x.Character
+			char.HumanoidRootPart.CFrame = lobbySpawn.CFrame
+		end
+	end
+end)
+
+
+	
+
+
+local function startFunc()
+	while wait() do
+		for i = 10, 0, -1  do
+			wait(1)
+			intermission.Value = "Intermission: "..i
+
+			msg:FireAllClients(intermission.Value)
+
+
+		end
+		bool.Value = true
+
+		for i = 5, 0, -1 do
+			wait(1)
+			intermission.Value = "Dice rolls in: "..i
+			msg:FireAllClients(intermission.Value)
+			if i == 0 then
+				diceEvent.Value = true
+				diceEvent.Value = false
+			end
+		end
+
+
+
+		for i = 10, 0 ,-1 do
+			wait(1)
+			intermission.Value = "Dice resets in: "..i
+			msg:FireAllClients(intermission.Value)
+
+			if i == 0 then
+				diceRegen.Value = true
+				diceRegen.Value = false
+			end
+
+		end
+		bool.Value = false
+
+	end
+end
+
+spawn(startFunc)
+
+wait(3)
+
