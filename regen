@@ -1,0 +1,211 @@
+local RS = game:GetService("ReplicatedStorage")
+location = script.Parent.Parent
+regen = script.Parent
+local regen2 = game.Workspace.Color_platform
+save2 = regen2:clone()
+save = regen:clone()
+local dice1 = regen.dice1
+local dice2 = regen.dice2
+
+local diceBool = RS.diceBool
+local diceEvent = RS:WaitForChild("roundStatus")
+
+local OriginD1 = dice1.Position
+local OriginD2 = dice2.Position
+local inc = 0
+
+function resetColor()
+	for _, x in ipairs(workspace.Color_platform:GetChildren()) do
+		if x:IsA("Part") then
+			x.Transparency = 0
+			x.Material = Enum.Material.Brick
+
+		end
+	end
+end
+
+
+local diceRegen = RS:WaitForChild("diceRegen")
+
+function killPlayer(except1, except2)
+	for _, x in ipairs(workspace.Color_platform:GetChildren()) do
+		if x:IsA("Part") then
+
+			if except1.Name == x.Name then
+
+			elseif except2.Name == x.Name then
+
+			else
+				local touched
+				touched = x.Touched:Connect(function(hit)
+					local player = hit.Parent:FindFirstChild("Humanoid")
+					if player then
+						player.Health = 0
+						wait(3)
+					end
+				end)
+
+				for i = 1, 50 do
+					for _, y in ipairs(workspace.Color_platform:GetChildren()) do
+						if y:IsA("Part") then
+							if except1.Name ~= y.Name and except2.Name ~= y.Name then
+								y.CFrame = CFrame.new(y.CFrame.X, y.CFrame.Y + 0.5, y.CFrame.Z) * CFrame.Angles(0,math.rad(i * 10),0)
+
+								inc = inc + 0.005
+								y.Transparency = inc
+								y.Material = Enum.Material.Brick
+								
+							end
+						end
+					end
+					wait(0.02)
+				end
+
+			end
+		end
+	end
+end
+
+--FUNCTION TO DIM ALL THE COLOR THE LOSES AND CHANGE ALL OF THEIR MATERIAL TO NEON
+function dimAll()
+	for _, x in ipairs(workspace.Color_platform:GetChildren()) do
+		if x:IsA("Part") then
+			x.Material = Enum.Material.Neon
+		end
+	end
+end
+
+--FUNCTION WHEN THE DICE STOPS
+function whenStop()
+
+	wait(2)
+	--Wait until dice stops
+	repeat
+		local dice1 = game.Workspace.Dice.dice1.Velocity.Magnitude
+		local dice2 = game.Workspace.Dice.dice2.Velocity.Magnitude
+		wait()
+
+	until dice1 == 0 and dice2 == 0
+	--Code to execute after the dice stopped
+	local OriginD1 = dice1.Position
+	local OriginD2 = dice2.Position
+	local winner = game.Workspace.Winner
+
+	--RAYCASTING FOR FRONT AND BACK FACE
+	local function rayCastFront(val, dice, origin, part)
+		local getWinner = dice.CFrame.LookVector * val
+		local ray = Ray.new(origin, getWinner)
+		local whitelist = {part}
+
+		local part = workspace:FindPartOnRayWithWhitelist(ray, whitelist)
+		if part ~= nil then
+			return part
+		end
+	end
+
+	--RAYCASTING FOR RIGHT AND LEFT FACE
+	local function rayCastRight(val,dice, origin, part)
+		local getWinner = dice.CFrame.RightVector * val
+		local ray = Ray.new(origin, getWinner)
+		local whitelist = {part}
+		local part = workspace:FindPartOnRayWithWhitelist(ray, whitelist)
+		if part ~= nil then
+			return part
+		end
+	end
+
+	--RAYCASTING FOR UP AND DOWN FACE
+	local function rayCastUp(val,dice, origin, part)
+		local getWinner = dice.CFrame.UpVector * val
+		local ray = Ray.new(origin, getWinner)
+		local whitelist = {part}
+		local part = workspace:FindPartOnRayWithWhitelist(ray, whitelist)
+		if part ~= nil then
+			return part
+		end
+	end
+
+	--Winning Conditions for Dice 1
+	local PinkD1 = rayCastFront(100, dice1, OriginD1, winner)
+	local BlueD1 = rayCastFront(-100, dice1, OriginD1, winner)
+	local YellowD1 = rayCastRight(100, dice1, OriginD1, winner)
+	local RedD1 = rayCastRight(-100, dice1, OriginD1, winner)
+	local GreenD1 = rayCastUp(100, dice1, OriginD1, winner)
+	local WhiteD1 = rayCastUp(-100, dice1, OriginD1, winner)
+
+	--Winning Conditions for Dice 2
+	local PinkD2 = rayCastFront(100, dice2, OriginD2, winner)
+	local BlueD2 = rayCastFront(-100, dice2, OriginD2, winner)
+	local YellowD2 = rayCastRight(100, dice2, OriginD2, winner)
+	local RedD2 = rayCastRight(-100, dice2, OriginD2, winner)
+	local GreenD2 = rayCastUp(100, dice2, OriginD2, winner)
+	local WhiteD2 = rayCastUp(-100, dice2, OriginD2, winner)
+
+	local tableWinner = {}
+
+
+	--IF STATEMENT FOR WINNING DICE 1
+	if PinkD1 == winner then
+		regen2.Pink.Transparency = 0
+		tableWinner[1] = regen2.Pink
+	elseif BlueD1 == winner then
+		regen2.Blue.Transparency = 0
+		tableWinner[1] = regen2.Blue
+	elseif YellowD1 == winner then
+		regen2.Yellow.Transparency = 0
+		tableWinner[1] = regen2.Yellow
+	elseif RedD1 ==  winner then
+		regen2.Red.Transparency = 0
+		tableWinner[1] = regen2.Red
+	elseif GreenD1 == winner  then
+		regen2.Green.Transparency = 0
+		tableWinner[1] = regen2.Green
+	elseif WhiteD1 == winner then
+		regen2.White.Transparency = 0
+		tableWinner[1] = regen2.White
+	end
+
+	-- IF STATEMENT FOR WINNING DICE 2
+	if PinkD2 == winner then
+		regen2.Pink.Transparency = 0
+		tableWinner[2] = regen2.Pink
+	elseif BlueD2 == winner then
+		regen2.Blue.Transparency = 0
+		tableWinner[2] = regen2.Blue
+	elseif YellowD2 == winner then
+		regen2.Yellow.Transparency = 0
+		tableWinner[2] = regen2.Yellow
+	elseif RedD2 ==  winner then
+		regen2.Red.Transparency = 0
+		tableWinner[2] = regen2.Red
+	elseif GreenD2 == winner  then
+		regen2.Green.Transparency = 0
+		tableWinner[2] = regen2.Green
+	elseif WhiteD2 == winner then
+		regen2.White.Transparency = 0
+		tableWinner[2] = regen2.White
+	end
+
+
+	dimAll()
+	killPlayer(tableWinner[1], tableWinner[2])
+
+end
+
+
+diceRegen.Changed:Connect(function()
+	regen:remove()
+	regen2:remove()
+	local back2 = save2:clone()
+	local back = save:clone()
+	back2.Parent = location
+	back.Parent = location
+	back:MakeJoints()
+end)
+
+diceEvent.Changed:Connect(function()
+	dice1.Anchored = false
+	dice2.Anchored = false
+	
+	whenStop()
+end)
