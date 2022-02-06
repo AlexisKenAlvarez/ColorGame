@@ -1,0 +1,23 @@
+local playerUI = script.Parent
+local gameStatus = game.ReplicatedStorage.myBool
+local intermission = game.ReplicatedStorage.intermission
+local dice = game.Workspace.Dice
+local dice1 = dice.dice1
+local dice2= dice.dice2
+
+local diceRegen = RS:WaitForChild("diceRegen")
+
+local bool = RS:WaitForChild("myBool")
+local event = RS:WaitForChild("RE")
+local roundEvent = RS:WaitForChild("roundEvent")
+local status = RS:WaitForChild("roundStatus")
+
+local PS = game:GetService("Players")
+
+local msg = RS:WaitForChild("message")
+
+
+
+msg.OnClientEvent:Connect(function(text)
+	playerUI.Text = text
+end)
